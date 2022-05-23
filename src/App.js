@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { nanoid } from "nanoid";
-import initialContacts from './Contacts.json';
+// import initialContacts from './Contacts.json';
 import Section from "components/Section";
 import Form from "components/Form";
 import Filter from "components/Filter";
@@ -8,7 +8,7 @@ import Contacts from "components/Contacts";
 
 class App extends Component{
   state = {
-    contacts: initialContacts,
+    contacts: [],
     filter: '',
   };
 
@@ -45,6 +45,21 @@ class App extends Component{
       contact.name.toLowerCase().includes(normalizedFilter) ||
       contact.number.includes(normalizedFilter),
     );
+  };
+
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    };
+  };
+  
+  componentDidUpdate(prevState, prevProps) {
+    const { contacts } = this.state;
+    if (contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+    };
   };
 
   render() {  
