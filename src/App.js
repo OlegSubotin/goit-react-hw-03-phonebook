@@ -1,15 +1,30 @@
 import React, { Component } from "react";
 import { nanoid } from "nanoid";
-// import initialContacts from './Contacts.json';
+import initialContacts from './Contacts.json';
 import Section from "components/Section";
 import Form from "components/Form";
 import Filter from "components/Filter";
-import Contacts from "components/Contacts";
+import ContactsList from "components/ContactsList";
 
 class App extends Component{
   state = {
-    contacts: [],
+    contacts: initialContacts,
     filter: '',
+  };
+
+  componentDidMount() {
+    const contacts = localStorage.getItem('contacts');
+    const parsedContacts = JSON.parse(contacts);
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    };
+  };
+  
+  componentDidUpdate(prevState, prevProps) {
+    const { contacts } = this.state;
+    if (contacts !== prevState.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
+    };
   };
 
   addContact = ({ name, number }) => {
@@ -47,21 +62,6 @@ class App extends Component{
     );
   };
 
-  componentDidMount() {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    if (parsedContacts) {
-      this.setState({ contacts: parsedContacts });
-    };
-  };
-  
-  componentDidUpdate(prevState, prevProps) {
-    const { contacts } = this.state;
-    if (contacts !== prevState.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(contacts));
-    };
-  };
-
   render() {  
     const { filter } = this.state;
     const { addContact, onContactDelete, changeFilter, getVisibleContacts } = this;
@@ -76,7 +76,7 @@ class App extends Component{
             value={filter}
             onChange={changeFilter}
           />
-          <Contacts
+          <ContactsList
             contacts={visibleContacts}
             onContactDelete={onContactDelete}
           />     
@@ -84,6 +84,6 @@ class App extends Component{
       </>
     );
   };
-}
+};
 
 export default App;
